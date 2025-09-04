@@ -1,5 +1,14 @@
-// TOOLBAY API Service - Backend 연결
-const API_BASE_URL = 'http://localhost:3001/api';
+// TOOLBAY API Service - Backend 연결  
+console.log('🌍 All env vars:', import.meta.env);
+console.log('🔧 VITE_API_BASE_URL from env:', import.meta.env.VITE_API_BASE_URL);
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+
+console.log('✅ Final API_BASE_URL:', API_BASE_URL);
+
+// 디버깅용 로그 (나중에 제거 예정)
+console.log('🔧 API_BASE_URL:', API_BASE_URL);
+console.log('🌍 VITE_API_BASE_URL env:', import.meta.env.VITE_API_BASE_URL);
 
 interface ApiResponse<T> {
   success: boolean;
@@ -39,6 +48,7 @@ interface Opinion {
   users: {
     trust_score: number;
   };
+  isOwn?: boolean; // 본인 의견 여부
 }
 
 interface Category {
@@ -216,6 +226,44 @@ export const apiService = {
     if (!result.success) {
       throw new Error(result.error || 'Failed to vote on opinion');
     }
+  },
+
+  // 사용자의 기존 의견 조회
+  async getMyOpinion(toolId: string): Promise<Opinion | null> {
+    const response = await fetch(`${API_BASE_URL}/tools/${toolId}/my-opinion`);
+    const result: ApiResponse<{ opinion: Opinion | null }> = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to fetch my opinion');
+    }
+    
+    return result.data?.opinion || null;
+  },
+
+  // 의견 수정
+  async updateOpinion(opinionId: string, opinionData: {
+    content: string;
+    rating?: number;
+  }): Promise<Opinion> {
+    const response = await fetch(`${API_BASE_URL}/opinions/${opinionId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(opinionData),
+    });
+    
+    const result: ApiResponse<{ opinion: Opinion }> = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to update opinion');
+    }
+    
+    if (!result.data?.opinion) {
+      throw new Error('Opinion update failed');
+    }
+    
+    return result.data.opinion;
   },
 };
 

@@ -63,22 +63,39 @@ const OpinionItem: React.FC<Props> = ({ opinion, onVoteChange }) => {
     return 'text-[#94a3b8]';
   };
 
+  const isOwnOpinion = opinion.isOwn;
+
   return (
-    <div className="bg-[#252832] backdrop-blur-sm border border-gray-600/30 rounded-xl p-4 mb-4 transition-all duration-200 hover:border-gray-500/40">
+    <div className={`backdrop-blur-sm border rounded-xl p-4 mb-4 transition-all duration-200 ${
+      isOwnOpinion 
+        ? 'bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border-blue-500/30 hover:border-blue-400/50' 
+        : 'bg-[#252832] border-gray-600/30 hover:border-gray-500/40'
+    }`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
+          <div className={`w-8 h-8 bg-gradient-to-br rounded-full flex items-center justify-center border ${
+            isOwnOpinion 
+              ? 'from-blue-400/30 to-indigo-400/30 border-blue-400/50'
+              : 'from-blue-500/20 to-indigo-500/20 border-blue-500/30'
+          }`}>
             <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
           
           <div className="flex items-center space-x-2">
-            <span className="text-[#e2e8f0] font-medium text-sm">Anonymous User</span>
+            <span className={`font-medium text-sm ${isOwnOpinion ? 'text-blue-200' : 'text-[#e2e8f0]'}`}>
+              {isOwnOpinion ? 'You (내 의견)' : 'Anonymous User'}
+            </span>
             <div className={`px-2 py-1 rounded-lg border text-xs font-medium ${getTrustColor(opinion.users?.trust_score || 50)}`}>
               Trust: {opinion.users?.trust_score || 50}
             </div>
+            {isOwnOpinion && (
+              <div className="px-2 py-1 rounded-lg border border-blue-500/30 bg-blue-500/10 text-xs font-medium text-blue-300">
+                ✏️ 내가 쓴 의견
+              </div>
+            )}
           </div>
         </div>
         
