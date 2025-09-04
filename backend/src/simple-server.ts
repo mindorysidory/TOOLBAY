@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
@@ -95,7 +95,7 @@ app.get('/api/categories', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -124,7 +124,7 @@ app.get('/api/tools', async (req, res) => {
     }
 
     if (search) {
-      query = query.textSearch('search_vector', search);
+      query = query.textSearch('search_vector', String(search));
     }
 
     // Apply pagination and ordering
@@ -146,7 +146,7 @@ app.get('/api/tools', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -197,7 +197,7 @@ app.get('/api/tools/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -205,7 +205,14 @@ app.get('/api/tools/:id', async (req, res) => {
 // Create new tool
 app.post('/api/tools', async (req, res) => {
   try {
-    const { name, description, url, category_id, pricing = 'unknown', tags = [] } = req.body;
+    const { name, description, url, category_id, pricing = 'unknown', tags = [] } = req.body as {
+      name: string;
+      description: string;
+      url: string;
+      category_id: string;
+      pricing?: string;
+      tags?: string[];
+    };
 
     if (!name || !description || !url || !category_id) {
       return res.status(400).json({
@@ -247,7 +254,7 @@ app.post('/api/tools', async (req, res) => {
         category_id,
         pricing,
         tags,
-        submitted_by: user.id,
+        submitted_by: user?.id || '',
         meta_title: name,
         meta_description: description.substring(0, 160)
       }])
@@ -273,7 +280,7 @@ app.post('/api/tools', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -284,7 +291,7 @@ app.put('/api/tools/:id', async (req, res) => {
     const { id } = req.params;
     const { name, description, url, category_id, pricing, tags } = req.body;
 
-    const updateData = {};
+    const updateData: any = {};
     if (name) updateData.name = name;
     if (description) updateData.description = description;
     if (url) {
@@ -334,7 +341,7 @@ app.put('/api/tools/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -369,7 +376,7 @@ app.delete('/api/tools/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -408,7 +415,7 @@ app.get('/api/tools/:toolId/opinions', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -458,7 +465,7 @@ app.post('/api/tools/:toolId/opinions', async (req, res) => {
       .from('opinions')
       .select('id')
       .eq('tool_id', toolId)
-      .eq('user_id', user.id)
+      .eq('user_id', user?.id || '')
       .single();
 
     if (existingOpinion) {
@@ -472,7 +479,7 @@ app.post('/api/tools/:toolId/opinions', async (req, res) => {
       .from('opinions')
       .insert([{
         tool_id: toolId,
-        user_id: user.id,
+        user_id: user?.id || '',
         content,
         rating
       }])
@@ -496,7 +503,7 @@ app.post('/api/tools/:toolId/opinions', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -543,7 +550,7 @@ app.post('/api/opinions/:opinionId/votes', async (req, res) => {
       .from('votes')
       .select('id, vote_type')
       .eq('opinion_id', opinionId)
-      .eq('user_id', user.id)
+      .eq('user_id', user?.id || '')
       .single();
 
     if (existingVote) {
@@ -584,7 +591,7 @@ app.post('/api/opinions/:opinionId/votes', async (req, res) => {
         .from('votes')
         .insert([{
           opinion_id: opinionId,
-          user_id: user.id,
+          user_id: user?.id || '',
           vote_type
         }])
         .select()
@@ -601,7 +608,7 @@ app.post('/api/opinions/:opinionId/votes', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -648,7 +655,7 @@ app.post('/api/tools/:toolId/ratings', async (req, res) => {
       .from('tool_ratings')
       .select('id')
       .eq('tool_id', toolId)
-      .eq('user_id', user.id)
+      .eq('user_id', user?.id || '')
       .single();
 
     if (existingRating) {
@@ -673,7 +680,7 @@ app.post('/api/tools/:toolId/ratings', async (req, res) => {
         .from('tool_ratings')
         .insert([{
           tool_id: toolId,
-          user_id: user.id,
+          user_id: user?.id || '',
           rating
         }])
         .select()
@@ -690,7 +697,7 @@ app.post('/api/tools/:toolId/ratings', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
