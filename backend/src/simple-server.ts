@@ -25,7 +25,7 @@ app.use(express.json());
 
 // Supabase client - 환경변수 체크 추가
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('❌ Missing Supabase credentials:', {
@@ -64,13 +64,14 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API 기본 경로를 루트로 변경
 app.get('/api', (req, res) => {
   res.json({
     name: 'TOOLBAY API',
     version: '1.0.0',
     status: 'ready',
     endpoints: {
-      health: '/health',
+      health: '/api/health',
       tools: '/api/tools',
       categories: '/api/categories'
     }
