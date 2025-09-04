@@ -76,7 +76,7 @@ app.get('/api/test-db', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Database connection failed',
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -611,6 +611,139 @@ app.post('/api/opinions/:opinionId/votes', async (req, res) => {
         data: { vote, action: 'created' }
       });
     }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Get user's existing opinion for a tool
+app.get('/api/tools/:toolId/my-opinion', async (req, res) => {
+  try {
+    const { toolId } = req.params;
+    
+    // Get user based on IP
+    const ipFingerprint = req.ip || 'unknown';
+    
+    const { data: user } = await supabase
+      .from('users')
+      .select('id')
+      .eq('ip_fingerprint', ipFingerprint)
+      .single();
+
+    if (!user) {
+      return res.json({
+        success: true,
+        data: { opinion: null }
+      });
+    }
+
+    const { data: opinion, error } = await supabase
+      .from('opinions')
+      .select(`
+        *,
+        users (
+          trust_score
+        )
+      `)
+      .eq('tool_id', toolId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      data: { opinion: opinion || null }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Update user's opinion
+app.put('/api/opinions/:opinionId', async (req, res) => {
+  try {
+    const { opinionId } = req.params;
+    const { content, rating } = req.body;
+
+    if (!content || content.length < 10) {
+      return res.status(400).json({
+        success: false,
+        error: 'Opinion content must be at least 10 characters'
+      });
+    }
+
+    if (rating && (rating < 1 || rating > 5)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Rating must be between 1 and 5'
+      });
+    }
+
+    // Get user based on IP
+    const ipFingerprint = req.ip || 'unknown';
+    
+    const { data: user } = await supabase
+      .from('users')
+      .select('id')
+      .eq('ip_fingerprint', ipFingerprint)
+      .single();
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    // Verify the opinion belongs to this user
+    const { data: existingOpinion } = await supabase
+      .from('opinions')
+      .select('user_id')
+      .eq('id', opinionId)
+      .single();
+
+    if (!existingOpinion || existingOpinion.user_id !== user.id) {
+      return res.status(403).json({
+        success: false,
+        error: 'You can only edit your own opinions'
+      });
+    }
+
+    // Update the opinion
+    const { data: opinion, error } = await supabase
+      .from('opinions')
+      .update({
+        content,
+        rating,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', opinionId)
+      .select(`
+        *,
+        users (
+          trust_score
+        )
+      `)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      message: 'Opinion updated successfully',
+      data: { opinion }
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
