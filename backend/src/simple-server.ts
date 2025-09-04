@@ -96,14 +96,21 @@ app.get('/api/env-check', (req, res) => {
 // Test database connection
 app.get('/api/test-db', async (req, res) => {
   try {
+    console.log('Testing database connection...');
+    console.log('Supabase URL:', process.env.SUPABASE_URL?.substring(0, 20) + '...');
+    console.log('Key available:', !!(process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY));
+    
     const { data, error } = await supabase
       .from('categories')
       .select('*')
       .limit(5);
 
     if (error) {
+      console.error('Supabase error:', error);
       throw error;
     }
+
+    console.log('Database query successful, data:', data);
 
     res.json({
       success: true,
@@ -114,10 +121,18 @@ app.get('/api/test-db', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Database connection error:', error);
+    const errorDetails = error instanceof Error ? {
+      name: error.name,
+      message: error.message,
+      stack: error.stack?.substring(0, 500)
+    } : error;
+    
     res.status(500).json({
       success: false,
       message: 'Database connection failed',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: errorDetails
     });
   }
 });
@@ -125,6 +140,8 @@ app.get('/api/test-db', async (req, res) => {
 // Get categories
 app.get('/api/categories', async (req, res) => {
   try {
+    console.log('Fetching categories...');
+    
     const { data: categories, error } = await supabase
       .from('categories')
       .select('*')
@@ -132,17 +149,25 @@ app.get('/api/categories', async (req, res) => {
       .order('sort_order');
 
     if (error) {
+      console.error('Categories query error:', error);
       throw error;
     }
+
+    console.log('Categories fetched successfully:', categories?.length || 0);
 
     res.json({
       success: true,
       data: { categories: categories || [] }
     });
   } catch (error) {
+    console.error('Categories endpoint error:', error);
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: error instanceof Error ? {
+        name: error.name,
+        message: error.message
+      } : error
     });
   }
 });
