@@ -51,13 +51,13 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
         await apiService.updateOpinion(existingOpinion.id, {
           content: opinion.trim()
         });
-        setSuccessMessage('✅ 의견이 성공적으로 수정되었습니다!');
+        setSuccessMessage('✅ Your opinion has been successfully updated!');
       } else {
         // 새로 작성 모드
         await apiService.createOpinion(toolId, {
           content: opinion.trim()
         });
-        setSuccessMessage('✅ 의견이 성공적으로 작성되었습니다!');
+        setSuccessMessage('✅ Your opinion has been successfully submitted!');
         
         // 작성 후 폼 초기화
         setOpinion('');
@@ -73,7 +73,7 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       if (errorMessage.includes('already submitted')) {
-        setError('⚠️ 이미 이 도구에 대한 의견을 작성하셨습니다. 기존 의견을 수정할 수 있습니다.');
+        setError('⚠️ You have already submitted an opinion for this tool. You can edit your existing opinion.');
         // 기존 의견을 다시 불러오기
         try {
           const myOpinion = await apiService.getMyOpinion(toolId);
