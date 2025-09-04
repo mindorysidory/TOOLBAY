@@ -23,13 +23,38 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Supabase client
+// Supabase client - 환경변수 체크 추가
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Missing Supabase credentials:', {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseKey,
+    env: process.env.NODE_ENV
+  });
+}
+
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  supabaseUrl || '',
+  supabaseKey || ''
 );
 
 // Test routes
+app.get('/', (req, res) => {
+  res.json({
+    name: 'TOOLBAY API',
+    status: 'healthy', 
+    message: 'Server is running!',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+    env: {
+      hasSupabaseUrl: !!process.env.SUPABASE_URL,
+      hasSupabaseKey: !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY)
+    }
+  });
+});
+
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
