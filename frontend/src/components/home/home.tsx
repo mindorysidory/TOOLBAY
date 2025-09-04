@@ -156,11 +156,11 @@ const Home: React.FC<Props> = ({ allTools }) => {
             <h1 className="text-5xl font-bold text-[#e2e8f0] mb-4">
               TOOLBAY
             </h1>
-            <p className="text-xl text-[#94a3b8] mb-6 max-w-3xl mx-auto">
+            <p className="text-xl text-[#94a3b8] mb-6 max-w-none mx-auto whitespace-nowrap">
               TOOLBAY leverages collective intelligence to help you discover and evaluate the best tools.
             </p>
             <div className="text-lg text-[#94a3b8] mb-8 max-w-2xl mx-auto text-left">
-              <p className="mb-3 font-medium">Here's what you can do:</p>
+              <p className="mb-3 font-bold">Here's what you can do:</p>
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
                   <span className="text-blue-400">•</span>

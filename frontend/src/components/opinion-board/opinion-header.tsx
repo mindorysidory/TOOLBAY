@@ -16,8 +16,8 @@ const OpinionHeader: React.FC<Props> = ({ selectedTool }) => {
 
   // Mock vote data - should come from store
   const voteData = {
-    upvotes: 1124,
-    downvotes: 89,
+    upvotes: 0,
+    downvotes: 0,
   };
 
   const handleVote = (voteType: 'up' | 'down') => {
@@ -30,7 +30,8 @@ const OpinionHeader: React.FC<Props> = ({ selectedTool }) => {
     // TODO: API call to update vote
   };
 
-  const upvotePercentage = Math.round((voteData.upvotes / (voteData.upvotes + voteData.downvotes)) * 100);
+  const totalVotes = voteData.upvotes + voteData.downvotes;
+  const upvotePercentage = totalVotes > 0 ? Math.round((voteData.upvotes / totalVotes) * 100) : 0;
 
   return (
     <div className="p-4 border-b border-gray-600/30">

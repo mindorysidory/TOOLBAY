@@ -6,6 +6,7 @@ import MainLayout from './components/layout/main-layout';
 import Terms from './pages/terms';
 import Feedback from './pages/feedback';
 import Contact from './pages/contact';
+import AdminFeedback from './pages/admin-feedback';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/terms" element={<Terms />} />
             <Route path="/feedback" element={<Feedback />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/admin-feedback" element={<AdminFeedback />} />
           </Routes>
         </div>
       </Router>

@@ -907,6 +907,123 @@ app.post('/api/tools/:toolId/ratings', async (req, res) => {
   }
 });
 
+// Feedback APIs
+app.post('/api/feedback', async (req, res) => {
+  try {
+    const { email, subject, message } = req.body;
+
+    if (!subject || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Subject and message are required'
+      });
+    }
+
+    const { data: feedback, error } = await supabase
+      .from('feedback')
+      .insert([{
+        email: email || null,
+        subject: subject.trim(),
+        message: message.trim(),
+        status: 'unread'
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      message: 'Feedback submitted successfully',
+      data: { id: feedback.id }
+    });
+  } catch (error) {
+    console.error('Feedback submission error:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Admin feedback list (password protected)
+app.get('/api/admin/feedback', async (req, res) => {
+  try {
+    const { secret } = req.query;
+    
+    if (secret !== 'TjskTjsk87') {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized access'
+      });
+    }
+
+    const { data: feedbacks, error } = await supabase
+      .from('feedback')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      data: { feedbacks: feedbacks || [] }
+    });
+  } catch (error) {
+    console.error('Admin feedback fetch error:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Update feedback status (for admin)
+app.patch('/api/admin/feedback/:id', async (req, res) => {
+  try {
+    const { secret } = req.query;
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (secret !== 'TjskTjsk87') {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized access'
+      });
+    }
+
+    const { data: feedback, error } = await supabase
+      .from('feedback')
+      .update({ 
+        status: status,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      message: 'Feedback status updated',
+      data: { feedback }
+    });
+  } catch (error) {
+    console.error('Feedback update error:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Route not found',

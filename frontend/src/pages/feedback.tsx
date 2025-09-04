@@ -4,18 +4,37 @@ import Footer from '../components/layout/footer';
 
 const Feedback: React.FC = () => {
   const [formData, setFormData] = useState({
-    type: 'general',
     email: '',
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual feedback submission logic
-    console.log('Feedback submitted:', formData);
-    alert('Feedback submitted successfully. Thank you!');
-    setFormData({ type: 'general', email: '', subject: '', message: '' });
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert('Feedback submitted successfully. Thank you!');
+        setFormData({ email: '', subject: '', message: '' });
+      } else {
+        throw new Error('Failed to submit feedback');
+      }
+    } catch (error) {
+      alert('Failed to submit feedback. Please try again.');
+      console.error('Feedback submission error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -37,25 +56,6 @@ const Feedback: React.FC = () => {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="type" className="block text-sm font-medium text-slate-900 mb-2">
-                Feedback Type
-              </label>
-              <select
-                id="type"
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                required
-              >
-                <option value="general">General Feedback</option>
-                <option value="bug">Bug Report</option>
-                <option value="feature">Feature Request</option>
-                <option value="ui">UI/UX Improvement</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-900 mb-2">
@@ -113,9 +113,10 @@ const Feedback: React.FC = () => {
               </p>
               <button
                 type="submit"
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium px-8 py-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                disabled={isSubmitting}
+                className={`bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium px-8 py-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Send Feedback
+                {isSubmitting ? 'Sending...' : 'Send Feedback'}
               </button>
             </div>
           </form>
