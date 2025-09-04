@@ -23,9 +23,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Supabase client - 환경변수 체크 추가
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Supabase client - 환경변수 체크 및 줄바꿈 제거
+const supabaseUrl = process.env.SUPABASE_URL?.trim();
+const supabaseKey = (process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)?.replace(/\s+/g, '').trim();
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('❌ Missing Supabase credentials:', {
