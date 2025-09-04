@@ -78,6 +78,21 @@ app.get('/api', (req, res) => {
   });
 });
 
+// Environment debug endpoint
+app.get('/api/env-check', (req, res) => {
+  res.json({
+    supabase: {
+      hasUrl: !!process.env.SUPABASE_URL,
+      hasServiceKey: !!process.env.SUPABASE_SERVICE_KEY,
+      hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      urlLength: process.env.SUPABASE_URL?.length || 0,
+      keyLength: (process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)?.length || 0,
+      nodeEnv: process.env.NODE_ENV
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Test database connection
 app.get('/api/test-db', async (req, res) => {
   try {
