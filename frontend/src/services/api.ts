@@ -155,6 +155,7 @@ export const apiService = {
   async createOpinion(toolId: string, opinionData: {
     content: string;
     rating?: number;
+    username?: string;
   }): Promise<Opinion> {
     const response = await fetch(`${API_BASE_URL}/tools/${toolId}/opinions`, {
       method: 'POST',
