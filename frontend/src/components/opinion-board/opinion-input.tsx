@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiService, Opinion } from '../../services/api';
+import { apiService, type Opinion } from '../../services/api';
 
 interface Props {
   toolId: string;
