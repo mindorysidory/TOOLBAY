@@ -133,10 +133,10 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
             <h3 className="text-lg font-bold text-[#e2e8f0]">
-              {isEditMode ? '내 의견 수정하기' : '새 의견 작성하기'}
+              {isEditMode ? 'Edit My Opinion' : 'Write New Opinion'}
             </h3>
             <span className="text-sm text-[#94a3b8]">
-              {isEditMode ? '기존 의견을 수정할 수 있습니다' : '익명으로 참여하세요'}
+              {isEditMode ? 'You can modify your existing opinion' : 'Participate anonymously'}
             </span>
           </div>
           
@@ -145,7 +145,7 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
               onClick={handleCancelEdit}
               className="px-3 py-1 text-xs text-[#94a3b8] hover:text-[#e2e8f0] border border-gray-500/50 hover:border-gray-400/70 rounded-lg transition-colors"
             >
-              새 의견 작성
+              Write New Opinion
             </button>
           )}
         </div>
@@ -170,13 +170,13 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
           {/* Opinion Input Area */}
           <div className="relative space-y-2">
             <label className="text-sm font-medium text-[#e2e8f0]">
-              {isEditMode ? '의견 내용 (수정)' : '의견 내용'}
+              {isEditMode ? 'Opinion Content (Edit)' : 'Opinion Content'}
             </label>
             <textarea
               value={opinion}
               onChange={(e) => setOpinion(e.target.value)}
               placeholder={isEditMode 
-                ? "기존 의견을 수정하세요..." 
+                ? "Edit your existing opinion..." 
                 : "Share your honest opinion about this AI tool...\n\nExamples:\n• Share your actual usage experience\n• Write specific pros and cons\n• Comparisons with other tools are also welcome"
               }
               className="w-full px-4 py-4 pb-12 text-[#e2e8f0] bg-[#1a1d21]/70 border border-gray-500/50 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md placeholder-[#94a3b8]"

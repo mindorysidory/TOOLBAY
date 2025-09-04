@@ -24,7 +24,7 @@ const OpinionList: React.FC<Props> = ({ toolId }) => {
               id: 'sample-1',
               content: 'Great tool for productivity! Really helps with daily tasks and workflow optimization.',
               rating: 5,
-              vote_score: 12,
+              vote_score: 0,
               created_at: new Date().toISOString(),
               users: { trust_score: 85 }
             },
@@ -32,7 +32,7 @@ const OpinionList: React.FC<Props> = ({ toolId }) => {
               id: 'sample-2',
               content: 'Solid features but could use some UI improvements. Overall good value for the price.',
               rating: 4,
-              vote_score: 8,
+              vote_score: 0,
               created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
               users: { trust_score: 72 }
             }
@@ -92,7 +92,7 @@ const OpinionList: React.FC<Props> = ({ toolId }) => {
               id: 'sample-1',
               content: 'Great tool for productivity! Really helps with daily tasks and workflow optimization.',
               rating: 5,
-              vote_score: 12,
+              vote_score: 0,
               created_at: new Date().toISOString(),
               users: { trust_score: 85 }
             },
@@ -100,7 +100,7 @@ const OpinionList: React.FC<Props> = ({ toolId }) => {
               id: 'sample-2',
               content: 'Solid features but could use some UI improvements. Overall good value for the price.',
               rating: 4,
-              vote_score: 8,
+              vote_score: 0,
               created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
               users: { trust_score: 72 }
             }

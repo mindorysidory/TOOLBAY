@@ -156,10 +156,26 @@ const Home: React.FC<Props> = ({ allTools }) => {
             <h1 className="text-5xl font-bold text-[#e2e8f0] mb-4">
               TOOLBAY
             </h1>
-            <p className="text-xl text-[#94a3b8] mb-8 max-w-3xl mx-auto">
-              You can Add new tools, You can recommend tools, You can criticize tools<br />
-              Powered by collective intelligence and voluntary participation evaluation system
+            <p className="text-xl text-[#94a3b8] mb-6 max-w-3xl mx-auto">
+              TOOLBAY leverages collective intelligence to help you discover and evaluate the best tools.
             </p>
+            <div className="text-lg text-[#94a3b8] mb-8 max-w-2xl mx-auto text-left">
+              <p className="mb-3 font-medium">Here's what you can do:</p>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <span className="text-blue-400">•</span>
+                  <span>Submit new tools and services</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-blue-400">•</span>
+                  <span>Share honest reviews and ratings</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-blue-400">•</span>
+                  <span>Find quality tools before making decisions</span>
+                </div>
+              </div>
+            </div>
             
             <div className="flex justify-center mb-8">
               <Link 
