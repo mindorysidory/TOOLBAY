@@ -10,7 +10,13 @@ const PORT = process.env.PORT || 3001;
 
 // Basic middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: [
+    'http://localhost:3000', 
+    'http://localhost:5173',
+    'https://toolbay.vercel.app',
+    'https://toolbay-git-main-mindorysidory.vercel.app',
+    'https://toolbay-mindorysidory.vercel.app'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
