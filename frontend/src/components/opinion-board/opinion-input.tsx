@@ -24,9 +24,9 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
         const myOpinion = await apiService.getMyOpinion(toolId);
         if (myOpinion) {
           setExistingOpinion(myOpinion);
-          // 기존 의견이 있으면 수정 모드로 설정
+          // 기존 의견이 있으면 collapsed 모드로 시작 (isEditMode = false)
           setOpinion(myOpinion.content);
-          setIsEditMode(true);
+          setIsEditMode(false);
         }
       } catch (error) {
         console.error('Failed to fetch existing opinion:', error);
@@ -55,7 +55,8 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
       } else {
         // 새로 작성 모드
         await apiService.createOpinion(toolId, {
-          content: opinion.trim()
+          content: opinion.trim(),
+          username: nickname.trim()
         });
         setSuccessMessage('✅ Your opinion has been successfully submitted!');
         
@@ -80,7 +81,7 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
           if (myOpinion) {
             setExistingOpinion(myOpinion);
             setOpinion(myOpinion.content);
-            setIsEditMode(true);
+            setIsEditMode(false);
           }
         } catch (fetchError) {
           console.error('Failed to fetch existing opinion:', fetchError);
@@ -101,6 +102,26 @@ const OpinionInput: React.FC<Props> = ({ toolId }) => {
     setError('');
     setSuccessMessage('');
   };
+
+  // Show collapsed state if user already contributed and not in edit mode
+  if (existingOpinion && !isEditMode) {
+    return (
+      <div className="p-4 bg-gradient-to-br from-[#252832] to-[#1e2329] border-t border-gray-600/30">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-[#e2e8f0] font-medium">✅ You already contributed your opinion!</span>
+          </div>
+          <button
+            onClick={() => setIsEditMode(true)}
+            className="px-4 py-2 text-sm text-blue-400 hover:text-blue-300 border border-blue-500/50 hover:border-blue-400/70 rounded-lg transition-colors"
+          >
+            Edit
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-gradient-to-br from-[#252832] to-[#1e2329] border-t border-gray-600/30">
